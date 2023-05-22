@@ -1,5 +1,5 @@
-# Tarea: Alquiler de vehículos (v3)
+# Tarea: Alquiler de vehículos (v4)
 ## Profesor: José Ramón Jiménez Reyes
 ## Alumno: José Martínez Estrada
 
-Creación de interfaz gráfica.
+Creación de bases de datos con MongoDB y MariaDB.
