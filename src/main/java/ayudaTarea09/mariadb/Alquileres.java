@@ -20,7 +20,7 @@ import dominio.Vehiculo;
 import ficheros.Vehiculos;
 import negocio.IAlquileres;
 
-public class Alquileres implements IAlquileres{
+public abstract class Alquileres implements IAlquileres{
 	
 	private static final String CLIENTE = "cliente";
 	private static final String VEHICULO = "vehiculo";
@@ -62,7 +62,7 @@ public class Alquileres implements IAlquileres{
 	
 	private void prepararSentencia(PreparedStatement sentencia, Alquiler alquiler) throws SQLException {
 		sentencia.setString(1, alquiler.getCliente().getDni());
-		sentencia.setString(2, ((Object) alquiler.getVehiculo()).getMarca());
+		sentencia.setString(2, ((Vehiculo) alquiler.getVehiculo()).getMarca());
 		sentencia.setDate(3, Date.valueOf(alquiler.getFechaAlquiler()));
 		sentencia.setNull(4, Types.DATE);
 	}
@@ -215,7 +215,7 @@ public class Alquileres implements IAlquileres{
 		}
 		try (PreparedStatement sentencia = conexion.prepareStatement("select * from alquileres where cliente = ? and vehiculo = ? and fechaAlquiler = ?")) {
 			sentencia.setString(1, alquiler.getCliente().getDni());
-			sentencia.setString(2, alquiler.getVehiculo().getMarca());
+			sentencia.setString(2, ((Vehiculo) alquiler.getVehiculo()).getMarca());
 			sentencia.setDate(3,  Date.valueOf(alquiler.getFechaAlquiler()));
 			ResultSet filas = sentencia.executeQuery();
 			alquiler = filas.first() ? getAlquiler(filas) : null;
@@ -232,7 +232,7 @@ public class Alquileres implements IAlquileres{
 		}
 		try (PreparedStatement sentencia = conexion.prepareStatement("delete from alquileres where cliente = ? and vehiculo = ? and fechaAlquiler = ?")) {
 			sentencia.setString(1, alquiler.getCliente().getDni());
-			sentencia.setString(2, alquiler.getVehiculo().getMarca());
+			sentencia.setString(2, ((Vehiculo) alquiler.getVehiculo()).getMarca());
 			sentencia.setDate(3,  Date.valueOf(alquiler.getFechaAlquiler()));
 			int filas = sentencia.executeUpdate();
 			if (filas == 0) {
@@ -243,46 +243,4 @@ public class Alquileres implements IAlquileres{
 		}
 	}
 
-	@Override
-	public List<Alquiler> get(Cliente cliente) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Alquiler> get(Autobus turismo) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void insertar(Alquiler alquiler) throws OperationNotSupportedException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Alquiler buscar(Alquiler alquiler) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void borrar(Alquiler alquiler) throws OperationNotSupportedException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void devolver(Cliente cliente, LocalDate fechaDevolucion) throws OperationNotSupportedException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void devolver(Vehiculo vehiculo, LocalDate fechaDevolucion) throws OperationNotSupportedException {
-		// TODO Auto-generated method stub
-		
-	}
-	
 }

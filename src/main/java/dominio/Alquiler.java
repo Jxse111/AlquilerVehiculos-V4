@@ -15,7 +15,7 @@ public class Alquiler {
 	private LocalDate fechaAlquiler;
 	private LocalDate fechaDevolucion;
 	private Cliente cliente;
-	private Turismo turismo;
+	private Vehiculo turismo;
 	
 	public Alquiler(Cliente cliente, Vehiculo vehiculo, LocalDate fechaAlquiler) {
 		setCliente(cliente);
@@ -77,11 +77,11 @@ public class Alquiler {
 		return turismo;
 	}
 
-	public void setTurismo(Turismo turismo) {
-		if(turismo == null) {
+	public void setTurismo(Vehiculo vehiculo) {
+		if(vehiculo == null) {
 			throw new NullPointerException("ERROR: El turismo no puede ser nulo.");
 		}
-		this.turismo = turismo;
+		this.turismo = vehiculo;
 	}
 	
 	public void devolver(LocalDate fechaDevolucion) throws OperationNotSupportedException{
