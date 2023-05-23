@@ -1,5 +1,6 @@
 package negocio;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
@@ -7,6 +8,7 @@ import javax.naming.OperationNotSupportedException;
 import dominio.Alquiler;
 import dominio.Autobus;
 import dominio.Cliente;
+import dominio.Vehiculo;
 
 public interface IAlquileres {
 
@@ -21,5 +23,15 @@ public interface IAlquileres {
 	Alquiler buscar(Alquiler alquiler);
 
 	void borrar(Alquiler alquiler) throws OperationNotSupportedException;
+
+	void devolver(Cliente cliente, LocalDate fechaDevolucion) throws OperationNotSupportedException;
+
+	void devolver(Vehiculo vehiculo, LocalDate fechaDevolucion) throws OperationNotSupportedException;
+
+	void comenzar();
+
+	void terminar();
+
+	List<Alquiler> get(Vehiculo vehiculo);
 
 }

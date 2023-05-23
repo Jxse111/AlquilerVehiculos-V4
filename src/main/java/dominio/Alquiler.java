@@ -17,9 +17,9 @@ public class Alquiler {
 	private Cliente cliente;
 	private Turismo turismo;
 	
-	public Alquiler(Cliente cliente, Turismo turismo, LocalDate fechaAlquiler) {
+	public Alquiler(Cliente cliente, Vehiculo vehiculo, LocalDate fechaAlquiler) {
 		setCliente(cliente);
-		setTurismo(turismo);
+		setTurismo(vehiculo);
 		setFechaAlquiler(fechaAlquiler);
 	}
 	
@@ -123,6 +123,11 @@ public class Alquiler {
 	}
 
 	Object getPrecio() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Object getVehiculo() {
 		// TODO Auto-generated method stub
 		return null;
 	}

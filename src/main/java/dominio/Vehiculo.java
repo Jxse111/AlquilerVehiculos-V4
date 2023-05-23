@@ -18,7 +18,7 @@ public abstract class Vehiculo extends Autobus {
 
 	public abstract void copiar(Vehiculo vehiculo);
 
-	protected static Turismo getTurismoConMatricula(String matricula) {
+	public static Turismo getTurismoConMatricula(String matricula) {
 		return new Turismo("Seat", "León", 90, matricula);
 	}
 
@@ -62,5 +62,10 @@ public abstract class Vehiculo extends Autobus {
 		Vehiculo other = (Vehiculo) obj;
 		return Objects.equals(marca, other.marca) && Objects.equals(matricula, other.matricula)
 				&& Objects.equals(modelo, other.modelo);
+	}
+
+	public boolean contains(Vehiculo vehiculo) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

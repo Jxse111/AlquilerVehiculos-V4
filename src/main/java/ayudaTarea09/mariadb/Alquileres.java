@@ -1,4 +1,4 @@
-package org.iesalandalus.programacion.alquilervehiculos.modelo.negocio.mariadb;
+package ayudaTarea09.mariadb;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -13,10 +13,12 @@ import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
 
-import org.iesalandalus.programacion.alquilervehiculos.modelo.dominio.Alquiler;
-import org.iesalandalus.programacion.alquilervehiculos.modelo.dominio.Cliente;
-import org.iesalandalus.programacion.alquilervehiculos.modelo.dominio.Vehiculo;
-import org.iesalandalus.programacion.alquilervehiculos.modelo.negocio.IAlquileres;
+import dominio.Alquiler;
+import dominio.Autobus;
+import dominio.Cliente;
+import dominio.Vehiculo;
+import ficheros.Vehiculos;
+import negocio.IAlquileres;
 
 public class Alquileres implements IAlquileres{
 	
@@ -48,7 +50,7 @@ public class Alquileres implements IAlquileres{
 	
 	private Alquiler getAlquiler(ResultSet fila) throws SQLException, OperationNotSupportedException {
 		Cliente cliente = Clientes.getInstancia().buscar(Cliente.getClienteConDni(fila.getString(CLIENTE)));
-		Vehiculo vehiculo = Vehiculos.getInstancia().buscar(Vehiculo.getVehiculoConMatricula(fila.getString(VEHICULO)));
+		Vehiculo vehiculo = Vehiculos.getInstancia().buscar(Vehiculo.getTurismoConMatricula(fila.getString(VEHICULO)));
 		LocalDate fechaAqluiler = fila.getDate(FECHA_ALQUILER).toLocalDate();
 		Alquiler alquiler = new Alquiler(cliente, vehiculo, fechaAqluiler);
 		LocalDate fechaDevolucion = (fila.getDate(FECHA_DEVOLUCION) == null) ? null : fila.getDate(FECHA_DEVOLUCION).toLocalDate();
@@ -60,7 +62,7 @@ public class Alquileres implements IAlquileres{
 	
 	private void prepararSentencia(PreparedStatement sentencia, Alquiler alquiler) throws SQLException {
 		sentencia.setString(1, alquiler.getCliente().getDni());
-		sentencia.setString(2, alquiler.getVehiculo().getMatricula());
+		sentencia.setString(2, ((Object) alquiler.getVehiculo()).getMarca());
 		sentencia.setDate(3, Date.valueOf(alquiler.getFechaAlquiler()));
 		sentencia.setNull(4, Types.DATE);
 	}
@@ -98,7 +100,7 @@ public class Alquileres implements IAlquileres{
 	public List<Alquiler> get(Vehiculo vehiculo) {
 		List<Alquiler> alquileres = new ArrayList<>();
 		try (PreparedStatement sentencia = conexion.prepareStatement("select * from alquileres where vehiculo = ?")) {
-			sentencia.setString(1, vehiculo.getMatricula());
+			sentencia.setString(1, vehiculo.getMarca());
 			ResultSet filas = sentencia.executeQuery();
 			while (filas.next()) {
 				alquileres.add(getAlquiler(filas));
@@ -123,7 +125,7 @@ public class Alquileres implements IAlquileres{
 		}
 	}
 	
-	private void comprobarAlquiler(Cliente cliente, Vehiculo vehiculo, LocalDate fechaAlquiler) throws OperationNotSupportedException {
+	private void comprobarAlquiler(Cliente cliente, Object object, LocalDate fechaAlquiler) throws OperationNotSupportedException {
 		try (PreparedStatement sentencia = conexion.prepareStatement("select count(*) from alquileres where cliente = ? and fechaDevolucion is null")) {
 			sentencia.setString(1, cliente.getDni());
 			ResultSet filas = sentencia.executeQuery();
@@ -135,7 +137,7 @@ public class Alquileres implements IAlquileres{
 			throw new IllegalArgumentException(ERROR + e.getMessage());
 		}
 		try (PreparedStatement sentencia = conexion.prepareStatement("select count(*) from alquileres where vehiculo = ? and fechaDevolucion is null")) {
-			sentencia.setString(1, vehiculo.getMatricula());
+			sentencia.setString(1, ((Vehiculo) object).getMarca());
 			ResultSet filas = sentencia.executeQuery();
 			filas.first();
 			if (filas.getInt(1) == 1) {
@@ -156,7 +158,7 @@ public class Alquileres implements IAlquileres{
 			throw new IllegalArgumentException(ERROR + e.getMessage());
 		}
 		try (PreparedStatement sentencia = conexion.prepareStatement("select count(*) from alquileres where vehiculo = ? and fechaDevolucion >= ?")) {
-			sentencia.setString(1, vehiculo.getMatricula());
+			sentencia.setString(1, ((Vehiculo) object).getMarca());
 			sentencia.setDate(2, Date.valueOf(fechaAlquiler));
 			ResultSet filas = sentencia.executeQuery();
 			filas.first();
@@ -193,7 +195,7 @@ public class Alquileres implements IAlquileres{
 			throw new NullPointerException("ERROR: No se puede devolver un alquiler de un vehículo nulo.");
 		}
 		try (PreparedStatement sentencia = conexion.prepareStatement("select * from alquileres where vehiculo = ? and fechaDevolucion is null", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE)) {
-			sentencia.setString(1, vehiculo.getMatricula());
+			sentencia.setString(1, vehiculo.getMarca());
 			ResultSet filas = sentencia.executeQuery();
 			if (filas.first()) {
 				filas.updateDate(FECHA_DEVOLUCION, Date.valueOf(fechaDevolucion));
@@ -213,7 +215,7 @@ public class Alquileres implements IAlquileres{
 		}
 		try (PreparedStatement sentencia = conexion.prepareStatement("select * from alquileres where cliente = ? and vehiculo = ? and fechaAlquiler = ?")) {
 			sentencia.setString(1, alquiler.getCliente().getDni());
-			sentencia.setString(2, alquiler.getVehiculo().getMatricula());
+			sentencia.setString(2, alquiler.getVehiculo().getMarca());
 			sentencia.setDate(3,  Date.valueOf(alquiler.getFechaAlquiler()));
 			ResultSet filas = sentencia.executeQuery();
 			alquiler = filas.first() ? getAlquiler(filas) : null;
@@ -230,7 +232,7 @@ public class Alquileres implements IAlquileres{
 		}
 		try (PreparedStatement sentencia = conexion.prepareStatement("delete from alquileres where cliente = ? and vehiculo = ? and fechaAlquiler = ?")) {
 			sentencia.setString(1, alquiler.getCliente().getDni());
-			sentencia.setString(2, alquiler.getVehiculo().getMatricula());
+			sentencia.setString(2, alquiler.getVehiculo().getMarca());
 			sentencia.setDate(3,  Date.valueOf(alquiler.getFechaAlquiler()));
 			int filas = sentencia.executeUpdate();
 			if (filas == 0) {
@@ -239,6 +241,48 @@ public class Alquileres implements IAlquileres{
 		} catch (SQLException | OperationNotSupportedException e) {
 			throw new IllegalArgumentException(ERROR + e.getMessage());
 		}
+	}
+
+	@Override
+	public List<Alquiler> get(Cliente cliente) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Alquiler> get(Autobus turismo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void insertar(Alquiler alquiler) throws OperationNotSupportedException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Alquiler buscar(Alquiler alquiler) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void borrar(Alquiler alquiler) throws OperationNotSupportedException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void devolver(Cliente cliente, LocalDate fechaDevolucion) throws OperationNotSupportedException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void devolver(Vehiculo vehiculo, LocalDate fechaDevolucion) throws OperationNotSupportedException {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

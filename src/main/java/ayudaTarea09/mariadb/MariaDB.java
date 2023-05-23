@@ -1,4 +1,4 @@
-package org.iesalandalus.programacion.alquilervehiculos.modelo.negocio.mariadb;
+package ayudaTarea09.mariadb;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
