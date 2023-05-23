@@ -76,4 +76,9 @@ public abstract class Vehiculos implements IVehiculos {
 
 	}
 
+	public static Vehiculos getInstancia() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
